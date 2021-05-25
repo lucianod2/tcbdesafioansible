@@ -1,0 +1,48 @@
+# Ansible Playbook
+# File: aws-create-groups-users-csv.yaml
+# Purpose: AWS users creation using ansible
+# Using: ansible-playbook aws-create-groups-csv.yaml
+# Input csv file format: usuario,senha,grupo,politica
+# Scribbler: Luciano Caetano
+# ------------------------------------------
+---
+- name: Create AWS resources
+  hosts: local
+  connection: local
+  gather_facts: False
+  no_log: False
+  vars_files: aws-mfa-enforce.yaml
+
+  tasks:
+
+# Create groups
+    - name: Read new AWS groups from CSV file
+      read_csv:
+        path: groups-users-to-aws.csv
+        key: grupo
+      register: grupo
+
+    - name: Creating new AWS groups from CSV file
+      community.aws.iam_group: 
+        name: "{{ item.value.grupo }}"
+        managed_policies:
+          - "{{ item.value.politica }}"
+          - "{{aws_mfaenforce}}"
+        state: present
+      loop: "{{ grupo.dict|dict2items }}"
+
+# Create users
+    - name: Read new AWS users from CSV file
+      read_csv:
+        path: groups-users-to-aws.csv
+      register: users
+
+    - name: Creating new AWS users
+      iam:
+        iam_type: user
+        name: "{{ item.usuario }}"
+        state: present
+        groups: "{{ item.grupo }}"
+        password: "{{ item.senha}}"
+      loop: "{{ users.list }}"
+

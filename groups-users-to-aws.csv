@@ -1,0 +1,7 @@
+usuario,senha,grupo,politica
+bootcamper.tcb,MeMuda123456!,CloudAdmin,arn:aws:iam::aws:policy/AdministratorAccess
+Stefano.Edge,MeMuda123456!,DBA,arn:aws:iam::aws:policy/AmazonRDSFullAccess
+Cosmo.Meyer,MeMuda123456!,Estagiarios,arn:aws:iam::aws:policy/ReadOnlyAccess
+Olivia-Rose.Huang,MeMuda123456!,LinuxAdmin,arn:aws:iam::aws:policy/AmazonEC2FullAccess
+Karolina.Cassidy,MeMuda123456!,RedesAdmin,arn:aws:iam::aws:policy/AmazonVPCFullAccess
+

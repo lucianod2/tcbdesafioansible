@@ -1,0 +1,2 @@
+---
+aws_mfaenforce: arn:aws:iam::910733473614:policy/EnforceMFAPolicy

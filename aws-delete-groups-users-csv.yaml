@@ -1,0 +1,47 @@
+# File: aws-delete-users-csv.yaml
+# Purpose: AWS user creation usinwqg ansible
+# Using: ansible aws-delete-group-users-csv.yaml
+# Input file format: usuarios,grupo,senha
+# Scribbler: Luciano Caetano
+# ------------------------------------------
+---
+- name: Delete AWS IAM users and groups
+  hosts: local
+  connection: local
+  gather_facts: False
+  no_log: False
+  vars_files: aws-mfa-enforce.yaml
+
+  tasks:
+
+# Delete Groups
+    - name: Reading AWS groups from CSV file
+      read_csv:
+        path: groups-users-to-aws.csv
+        key: grupo
+      register: grupo
+
+    - name: Deleting AWS IAM groups from CSV file
+      community.aws.iam_group:
+        name: "{{ item.value.grupo }}"
+        managed_policies:
+          - "{{ item.value.politica }}"
+          - "{{aws_mfaenforce}}"
+        state: absent
+      loop: "{{ grupo.dict|dict2items }}"
+
+# Delete Users
+    - name: Reading AWS IAM users from CSV file
+      read_csv:
+        path: groups-users-to-aws.csv
+      register: users
+
+    - name: Deleting AWS IAM users
+      iam:
+        iam_type: user
+        name: "{{ item.usuario }}"
+        state: absent
+        groups: "{{ item.grupo }}"
+        password: "{{ item.senha}}"
+      loop: "{{ users.list }}"
+
